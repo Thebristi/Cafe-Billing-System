@@ -16,6 +16,12 @@ class MenuItem{
     int id;
     string name;
     double price;
-
-   
-}
+public:
+    MenuItem() : id(0), name(""), price(0.0){}
+    MenuItem(int id, const string& name, double price)
+        : id(id), name(name), price (price){}
+    int getId() const {return id;}
+    string getName()const{return name;}
+    double getPrice()const {return price;}
+};
+//Person: base class used to demonstrate inheritance
