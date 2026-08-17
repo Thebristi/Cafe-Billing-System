@@ -7,12 +7,14 @@
   //- Constructors
   //- Inheritance
   //- Vector
+  //- File Handling
 
 
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -192,7 +194,7 @@ public:
         vector<int> quantities = order.getQuantities();
 
         cout << "\n----\n";
-        cout << "          CAFE RECEIPT\n";
+        cout << " CAFE RECEIPT\n";
         cout << "----\n";
 
         cout << "Order No. : "
@@ -255,6 +257,60 @@ public:
     {
         dailySales = 0;
         orderCount = 0;
+
+        // Load previously saved sales data (if any) on startup
+        loadSalesFromFile();
+    }
+
+    // Load saved sales data from sales.txt
+    void loadSalesFromFile()
+    {
+        ifstream inFile("sales.txt");
+
+        if (inFile)
+        {
+            string label1, label2, label3;
+
+            // Reads "Orders:" then the number
+            inFile >> label1 >> orderCount;
+
+            // Reads "Total" "Sales:" "Rs." then the number
+            inFile >> label1 >> label2 >> label3 >> dailySales;
+
+            inFile.close();
+        }
+    }
+
+    // Save current sales data to sales.txt (overwrites old data)
+    void saveSalesToFile()
+    {
+        ofstream outFile("sales.txt");
+
+        if (outFile)
+        {
+            outFile << "Orders: " << orderCount << endl;
+            outFile << "Total Sales: Rs. " << dailySales << endl;
+            outFile.close();
+        }
+    }
+
+    // Append this order's customer details to customers.txt
+    void saveCustomerToFile(Order order,
+                            Customer customer,
+                            int orderNumber)
+    {
+        ofstream outFile("customers.txt", ios::app);
+
+        if (outFile)
+        {
+            outFile << "Order No: " << orderNumber << endl;
+            outFile << "Name    : " << customer.getName() << endl;
+            outFile << "Contact : " << customer.getContact() << endl;
+            outFile << "Total   : Rs. " << order.calculateTotal() << endl;
+            outFile << "----" << endl;
+
+            outFile.close();
+        }
     }
 
     // Add item to menu
@@ -313,6 +369,10 @@ public:
             customer,
             orderCount
         );
+
+        // Save updated data to file after every completed order
+        saveSalesToFile();
+        saveCustomerToFile(order, customer, orderCount);
     }
 
     // Show daily sales
@@ -364,7 +424,7 @@ int main()
         int choice;
 
         cout << "\n ----\n";
-        cout << "      CAFE BILLING SYSTEM\n";
+        cout << " CAFE BILLING SYSTEM\n";
         cout << "\n----\n";
 
         cout << "1. View Menu\n";
